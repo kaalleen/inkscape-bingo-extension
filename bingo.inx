@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Bingo Card Creator</name>
+  <id>org.kaalleen.bingo</id>
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+        <submenu name="Render" />
+    </effects-menu>
+  </effect>
+  <label appearance="header">Bingo Card Creator</label>
+  <spacer />
+  <param name="card_header" type="string" gui-text="Headline">BINGO</param>
+  <param name="rows" type="int" gui-text="Rows" min="0" max="30">5</param>
+  <param name="columns" type="int" gui-text="Columns" min="0" max="30">5</param>
+  <param name="row_range" type="int" gui-text="Number range per column" min="0" max="30">15</param>
+  <script>
+    <command reldir="extensions" interpreter="python">bingo.py</command>
+  </script>
+</inkscape-extension>
