@@ -8,12 +8,20 @@
         <submenu name="Render" />
     </effects-menu>
   </effect>
-  <label appearance="header">Bingo Card Creator</label>
-  <spacer />
-  <param name="card_header" type="string" gui-text="Headline">BINGO</param>
-  <param name="rows" type="int" gui-text="Rows" min="0" max="30">5</param>
-  <param name="columns" type="int" gui-text="Columns" min="0" max="30">5</param>
-  <param name="row_range" type="int" gui-text="Number range per column" min="0" max="30">15</param>
+  <param name="tabs" type="notebook">
+      <page name="content" gui-text="Content">
+              <param name="card_header" type="string" gui-text="Headline">BINGO</param>
+              <param name="rows" type="int" gui-text="Rows" min="0" max="30">5</param>
+              <param name="columns" type="int" gui-text="Columns" min="0" max="30">5</param>
+              <param name="row_range" type="int" gui-text="Number range per column" min="0" max="30">15</param>
+      </page>
+      <page name="layout" gui-text="Layout">
+          <param name="grid_size" type="int" gui-text="Grid Size" min="0" max="500">20</param>
+          <param name="font_size" type="float" gui-text="Font Size" min="0" max="200">14</param>
+          <param name="header_color" type="color" gui-text="Header Color" appearance="colorbutton">0x990000ff</param>
+          <param name="num_color" type="color" gui-text="Numbers Color" appearance="colorbutton">0x000000ff</param>
+      </page>
+  </param>
   <script>
     <command reldir="extensions" interpreter="python">bingo.py</command>
   </script>
