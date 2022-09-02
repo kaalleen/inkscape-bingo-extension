@@ -35,12 +35,12 @@ class BingoCardCreator(inkex.GenerateExtension):
 
     def generate(self):
         self.card_header = self.options.card_header
-        self.rows = self.options.rows
         self.columns = self.options.columns
         self.row_range = self.options.row_range
+        self.rows = self.options.rows
         # if row_range is smaller than the rows, reduce rows to row_range
-        if self.rows < self.row_range:
-            self.row_range = self.rows
+        if self.row_range < self.rows:
+            self.rows = self.row_range
 
         numbers = self._get_numbers()
         group = inkex.Group.new("Bingo Grid")
@@ -49,7 +49,7 @@ class BingoCardCreator(inkex.GenerateExtension):
         y_start = 0
 
         # if the headline has a different length from "columns" do not try to put it in line
-        if self.options.columns != len(self.card_header):
+        if self.columns != len(self.card_header):
             group.insert(0, inkex.TextElement(self.card_header))
             y_start = 20
 
@@ -71,12 +71,12 @@ class BingoCardCreator(inkex.GenerateExtension):
     def _get_numbers(self):
         numbers = []
         for i in range(self.columns):
-            num_start = i * self.row_range + 1
-            num_end = (i + 1) * self.row_range + 1
+            num_start = (i * self.row_range) + 1
+            num_end = ((i + 1) * self.row_range) + 1
             num_range = list(range(num_start, num_end))
             shuffle(num_range)
             num_range = num_range[:self.rows]
-            if self.options.columns == len(self.card_header):
+            if self.columns == len(self.card_header):
                 num_range.insert(0, self.card_header[i])
             numbers.append(num_range)
         return numbers
