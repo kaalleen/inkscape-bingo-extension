@@ -93,36 +93,31 @@ class BingoCardCreator(inkex.GenerateExtension):
         return numbers
 
     def _render_numbers(self, numbers):
-        group = inkex.Group.new("Numbers")
         x = self.grid_size / 2
         y_start = (self.font_size / 2) - (self.grid_size / 2)
         header_style = "fill:%s;font-size:%s;text-anchor:middle;" % (self.header_color, self.font_size)
+        element_style = "fill:%s;font-size:%s;text-anchor:middle;" % (self.num_color, self.font_size)
+        text_element = inkex.TextElement(style=element_style)
 
         # if the headline has a different length from "columns" use headline without grid spacings
         if self.columns != len(self.card_header) and self.card_header:
-            header = inkex.TextElement(self.card_header, style=header_style, x=str((self.columns * self.grid_size) / 2), y=str(y_start))
-            group.insert(0, header)
+            header = inkex.Tspan(self.card_header, style=header_style, x=str((self.columns * self.grid_size) / 2), y=str(y_start))
+            text_element.insert(0, header)
             y_start += self.grid_size
 
         # insert numbers as a grid
         for n in numbers:
             y = y_start
             for i, text in enumerate(n):
-                # set color
+                element = inkex.Tspan(str(text), style=element_style, x=str(x), y=str(y))
+                # set style for header elements
                 if self.columns == len(self.card_header) and i == 0:
-                    color = self.header_color
-                else:
-                    color = self.num_color
-                element_style = "fill:%s;font-size:%s;text-anchor:middle" % (color, self.font_size)
-
-                element = inkex.TextElement(str(text), style=element_style, x=str(x), y=str(y))
-
+                    element.style = header_style
                 # insert into group
-                group.insert(0, element)
+                text_element.insert(0, element)
                 y += self.grid_size
             x += self.grid_size
-            color = self.num_color
-        return group
+        return text_element
 
     def _render_grid(self):
         if not self.render_grid:
