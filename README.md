@@ -1,12 +1,16 @@
-## Inkscape Extension: Bingo Card Generator
+## Inkscape Extension: Bingo Card Creator
 
-Adds "Bingo Card Generator" to the Inkscape Extensions list.
+Adds "Bingo Card Creator" to the Inkscape Extensions list.
 
-**How to install**
+### How to install
 
-Copy the files into the Inkscape extensions folder
+Copy the bingo folder from this repository into the Inkscape extensions folder.
 
-**How to use**
+Works with Inkscape 1.2
 
-* Open Extensions > Render > Bingo Card Generator
+### How to use
+
+* Open Extensions > Render > Bingo Card Creator
 * Set parameters as necessary and apply
+
+![Bingo params preview](preview.jpg)
