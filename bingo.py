@@ -38,9 +38,11 @@ class BingoCardCreator(inkex.GenerateExtension):
         pars.add_argument("--card_header", type=str, default="", dest="card_header")
 
         pars.add_argument("--grid_size", type=int, default=20, dest="grid_size")
-        pars.add_argument("--font_size", type=int, default=10, dest="font_size")
+        pars.add_argument("--font_size", type=float, default=10, dest="font_size")
         pars.add_argument("--header_color", type=inkex.Color, default=inkex.Color('#e01b24'), dest="header_color")
         pars.add_argument("--num_color", type=inkex.Color, default=inkex.Color('#000000'), dest="num_color")
+        pars.add_argument("--render_grid", type=inkex.Boolean, default=True, dest="render_grid")
+        pars.add_argument("--stroke_width", type=float, default=1, dest="stroke_width")
 
     def generate(self):
         self.card_header = self.options.card_header
@@ -55,47 +57,18 @@ class BingoCardCreator(inkex.GenerateExtension):
         self.grid_size = self.options.grid_size
         self.header_color = self.options.header_color
         self.num_color = self.options.num_color
+        self.render_grid = self.options.render_grid
+        self.stroke_width = self.options.stroke_width
 
         numbers = self._get_numbers()
-        group = inkex.Group.new("Bingo Grid")
+        number_group = self._render_numbers(numbers)
+        grid_group = self._render_grid()
 
-        x = 0
-        y_start = 0
-
-        color = self.header_color
-        # if the headline has a different length from "columns" use headline without grid spacings
-        if self.columns != len(self.card_header) and self.card_header:
-            header = inkex.TextElement(self.card_header)
-            header.style['fill'] = self.header_color
-            header.style['font-size'] = self.font_size
-            group.insert(0, header)
-            y_start = self.grid_size
-
-        # insert numbers as a grid
-        for n in numbers:
-            y = y_start
-            for i, text in enumerate(n):
-                element = inkex.TextElement(str(text))
-                # set position
-                element.set('x', x)
-                element.set('y', y)
-                # set color
-                if self.columns == len(self.card_header) and i == 0:
-                    color = self.header_color
-                else:
-                    color = self.num_color
-                element.style['fill'] = color
-                # set font size
-                element.style['font-size'] = self.font_size
-                # insert into group
-                group.insert(0, element)
-                y += self.grid_size
-            x += self.grid_size
-            color = self.num_color
-        yield group
+        yield number_group
+        yield grid_group
 
         # set a label to the automatically generated group
-        group.getparent().set("inkscape:label", "Bingo")
+        number_group.getparent().set("inkscape:label", "Bingo")
 
     def _get_numbers(self):
         numbers = []
@@ -109,6 +82,64 @@ class BingoCardCreator(inkex.GenerateExtension):
                 num_range.insert(0, self.card_header[i])
             numbers.append(num_range)
         return numbers
+
+    def _render_numbers(self, numbers):
+        group = inkex.Group.new("Numbers")
+        x = self.grid_size / 2
+        y_start = (self.font_size / 2) - (self.grid_size / 2)
+        header_style = "fill:%s;font-size:%s;text-anchor:middle;" % (self.header_color, self.font_size)
+
+        # if the headline has a different length from "columns" use headline without grid spacings
+        if self.columns != len(self.card_header) and self.card_header:
+            header = inkex.TextElement(self.card_header, style=header_style, x=str((self.columns * self.grid_size) / 2), y=str(y_start))
+            group.insert(0, header)
+            y_start += self.grid_size
+
+        # insert numbers as a grid
+        for n in numbers:
+            y = y_start
+            for i, text in enumerate(n):
+                # set color
+                if self.columns == len(self.card_header) and i == 0:
+                    color = self.header_color
+                else:
+                    color = self.num_color
+                element_style = "fill:%s;font-size:%s;text-anchor:middle" % (color, self.font_size)
+
+                element = inkex.TextElement(str(text), style=element_style, x=str(x), y=str(y))
+
+                # insert into group
+                group.insert(0, element)
+                y += self.grid_size
+            x += self.grid_size
+            color = self.num_color
+        return group
+
+    def _render_grid(self):
+        if not self.render_grid:
+            return
+
+        group = inkex.Group.new("Grid")
+        x = 0
+        y = 0
+        rows = self.rows
+        style = "stroke:#000000;fill:none;stroke-linecap:square;stroke-width:%s" % self.stroke_width
+
+        if not self.card_header:
+            y = -self.grid_size
+            rows -= 1
+
+        for i in range(self.columns + 1):
+            element = inkex.Line().new((x, y), (x, rows * self.grid_size), style=style)
+            group.insert(0, element)
+            x += self.grid_size
+
+        for i in range(self.rows + 1):
+            element = inkex.Line().new((0, y), (self.columns * self.grid_size, y), style=style)
+            group.insert(0, element)
+            y += self.grid_size
+
+        return group
 
 
 if __name__ == '__main__':
