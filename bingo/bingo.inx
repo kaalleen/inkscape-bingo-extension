@@ -14,6 +14,7 @@
               <param name="rows" type="int" gui-text="Rows" min="0" max="30">5</param>
               <param name="columns" type="int" gui-text="Columns" min="0" max="30">5</param>
               <param name="row_range" type="int" gui-text="Number range per column" min="0" max="30">15</param>
+              <param name="free" type="boolean" gui-text="Free space">true</param>
       </page>
       <page name="layout" gui-text="Layout">
           <param name="font_size" type="float" gui-text="Font Size" min="0" max="200">14</param>

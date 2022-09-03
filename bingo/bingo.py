@@ -22,8 +22,10 @@
 This extension generates bingo cards
 """
 
-import inkex
+from math import ceil
 from random import shuffle
+
+import inkex
 
 
 class BingoCardCreator(inkex.GenerateExtension):
@@ -36,6 +38,7 @@ class BingoCardCreator(inkex.GenerateExtension):
         pars.add_argument("--columns", type=int, default=5, dest="columns")
         pars.add_argument("--row_range", type=int, default=15, dest="row_range")
         pars.add_argument("--card_header", type=str, default="", dest="card_header")
+        pars.add_argument("--free", type=inkex.Boolean, default=True, dest="free")
 
         pars.add_argument("--grid_size", type=int, default=20, dest="grid_size")
         pars.add_argument("--font_size", type=float, default=10, dest="font_size")
@@ -46,6 +49,7 @@ class BingoCardCreator(inkex.GenerateExtension):
 
     def generate(self):
         self.card_header = self.options.card_header
+        self.free = self.options.free
         self.columns = self.options.columns
         self.row_range = self.options.row_range
         self.rows = self.options.rows
@@ -78,8 +82,13 @@ class BingoCardCreator(inkex.GenerateExtension):
             num_range = list(range(num_start, num_end))
             shuffle(num_range)
             num_range = num_range[:self.rows]
+
+            if self.free and i == ceil(self.rows / 2) - 1:
+                num_range[ceil(self.rows / 2) - 1] = "★"
+
             if self.columns == len(self.card_header):
                 num_range.insert(0, self.card_header[i])
+
             numbers.append(num_range)
         return numbers
 
