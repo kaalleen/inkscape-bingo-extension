@@ -1,0 +1,29 @@
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
+    tags:
+      - "v*"
+name: 
+  jobs:
+   runs-on: ubuntu-latest
+   steps:
+       - uses: actions/checkout@v3
+       with:
+           fetch-depth: 0
+           
+       - name: Compressing to zip
+         shell: bash
+         run: 
+            7z a bingo.zip inkscape-bingo-extension/bingo/
+        
+        - uses: actions/upload-artifact@v3
+          with:
+              name: bingo
+              path: bingo.zip
+       - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: bingo.zip
