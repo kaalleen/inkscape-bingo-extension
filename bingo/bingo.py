@@ -28,6 +28,8 @@ from random import shuffle
 
 import inkex
 
+XLINK_HREF = inkex.addNS('href', 'xlink')
+
 
 class BingoCardCreator(inkex.GenerateExtension):
     def add_arguments(self, pars):
@@ -69,7 +71,8 @@ class BingoCardCreator(inkex.GenerateExtension):
             self.rows = self.num_range
 
         # check if a bingo template is used
-        template_bingo_fields = self.svg.xpath(".//svg:rect[starts-with(@id,'bingo-area')]", namespaces=inkex.NSS)
+        xpath = ".//svg:rect[starts-with(@id,'bingo-area')]|.//svg:use[starts-with(@id,'bingo-area')]"
+        template_bingo_fields = self.svg.xpath(xpath, namespaces=inkex.NSS)
         if not template_bingo_fields:
             numbers = self._get_numbers()
             number_group = self._render_numbers(numbers)
@@ -79,6 +82,12 @@ class BingoCardCreator(inkex.GenerateExtension):
             yield grid_group
         else:
             for bingo_field in template_bingo_fields:
+                # set clone to its origin for now
+                bingo_clone = None
+                if bingo_field.tag_name == "use":
+                    bingo_clone = bingo_field
+                    bingo_field = self._get_clone_origin(bingo_field)
+
                 # get template params
                 # params of first bingo field will also be used for the others - if not defined specifically
                 self.font_size = float(bingo_field.get('bingo-font-size', self.font_size))
@@ -108,7 +117,16 @@ class BingoCardCreator(inkex.GenerateExtension):
                 transform = bingo_field.composed_transform()
                 transform_x = bingo_field.get('x', 0)
                 transform_y = bingo_field.get('y', 0)
-                transform = transform @ inkex.Transform(translate=(transform_x, transform_y))
+                bingo_field_transform = inkex.Transform(translate=(transform_x, transform_y))
+                transform = transform @ bingo_field_transform
+
+                # clone positioning
+                if bingo_clone is not None:
+                    transform_x = bingo_clone.get('x', 0)
+                    transform_y = bingo_clone.get('y', 0)
+                    transform = inkex.Transform(translate=(transform_x, transform_y)) @ bingo_field_transform
+                    transform = bingo_clone.composed_transform() @ transform
+
                 number_group.set('transform', transform)
                 if grid_group is not None:
                     grid_group.set('transform', transform)
@@ -121,6 +139,11 @@ class BingoCardCreator(inkex.GenerateExtension):
 
     def container_transform(self):
         return inkex.Transform(translate=(0, 0))
+
+    def _get_clone_origin(self, clone):
+        source_id = clone.get(XLINK_HREF)[1:]
+        xpath = ".//*[@id='%s']" % (source_id)
+        return self.document.xpath(xpath)[0]
 
     def _get_numbers(self):
         numbers = []
