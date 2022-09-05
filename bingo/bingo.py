@@ -87,6 +87,8 @@ class BingoCardCreator(inkex.GenerateExtension):
                 if bingo_field.tag_name == "use":
                     bingo_clone = bingo_field
                     bingo_field = self._get_clone_origin(bingo_field)
+                    if not bingo_field.tag_name == "rect":
+                        continue
 
                 # get template params
                 # params of first bingo field will also be used for the others - if not defined specifically

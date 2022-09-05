@@ -23,7 +23,7 @@ When a template has been opened in Inkscape before this extension is run, it wil
 
 Templates can predefine a single or multiple areas were the bingo numbers should be placed in.
 
-Create a rectangle and set the id-attribute to `bingo-area`. For multiple areas append numbers to the id such as `bingo-area_1`.
+Create a rectangle and set the id-attribute to `bingo-area`. For multiple areas append numbers to the id such as `bingo-area_1`. Clones of rectangles can also be used as bingo-areas.
 
 Use Inkscapes XML-Editor to add following attributes to the bingo-area-rectangle (optional):
 
