@@ -10,11 +10,16 @@
   </effect>
   <param name="tabs" type="notebook">
       <page name="content" gui-text="Content">
-              <param name="card_header" type="string" gui-text="Headline">BINGO</param>
-              <param name="rows" type="int" gui-text="Rows" min="0" max="30">5</param>
-              <param name="columns" type="int" gui-text="Columns" min="0" max="30">5</param>
-              <param name="num_range" type="int" gui-text="Number range per column" min="0" max="30">15</param>
-              <param name="free" type="boolean" gui-text="Free space">true</param>
+          <param name="card_header" type="string" gui-text="Headline">BINGO</param>
+          <param name="rows" type="int" gui-text="Rows" min="0" max="50">5</param>
+          <param name="columns" type="int" gui-text="Columns" min="0" max="50">5</param>
+          <param name="num_range" type="int" gui-text="Number range per column" min="0" max="50">15</param>
+          <param name="free_rows" type="int" gui-text="Free spaces per row" min="0" max="50">0</param>
+          <param name="free_center" type="boolean" gui-text="Free space at center">true</param>
+          <spacer />
+          <separator />
+          <spacer />
+          <label>☛ If used on a bingo template your custom settings may be overwritten by the template.</label>
       </page>
       <page name="layout" gui-text="Layout">
           <param name="font_size" type="float" gui-text="Font Size" min="0" max="200" precision="2">14</param>

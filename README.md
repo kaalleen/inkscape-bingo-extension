@@ -2,42 +2,45 @@
 
 Adds "Bingo Card Creator" to the Inkscape Extensions list.
 
-### How to install
+### How To Install
 
 Copy the bingo folder from this repository into the Inkscape extensions folder.
 
 Works with Inkscape 1.2
 
-### How to use
+### How To Use
 
 * Open Extensions > Render > Bingo Card Creator
 * Set parameters as necessary and apply
 
-![Bingo params preview](preview.jpg)
+![Bingo params preview](resources/preview.jpg)
 
 ## Bingo Templates
 
 When a template has been opened in Inkscape before this extension is run, it will insert the bingo numbers into the predefined area(s).
 
-### How to Build Template for the Bingo Card Creator
+### How To Build A Template For The Bingo Card Creator
 
-Templates can predefine areas were the bingo numbers should be placed in. The area is created through a rectangle with an id-attribute starting with `bingo-area`. Multiple areas are possible - in this case use `bingo-area_1` etc. as ids for the rectangles.
+Templates can predefine a single or multiple areas were the bingo numbers should be placed in.
 
-All available parameters can be forced through the template author. Set the following attributes to the bingo-area-rectangle:
+Create a rectangle and set the id-attribute to `bingo-area`. For multiple areas append numbers to the id such as `bingo-area_1`.
 
-|Attribute|Values|Default|Description|
-|---|---|---|---|
-|bingo-font-size|float|10|Font Size|
-|bingo-columns|int|5|Number of columns|
-|bingo-rows|int|5|Number of rows|
-|bingo-column-range|int|15|Number range for each column|
-|bingo-free|x.y;x.y|none|Semicolon (;) separated positions for free spaces. X and Y coordinates will be separated by a dot (.)|
-|bingo-star|boolean|false|If set to true, the number in the center will be replaced by a star|
-|bingo-render-grid|boolean|true|If set to true a grid will be rendered|
-|bingo-headline|string|BINGO|The headline text|
-|bingo-headline-color|color|'#e01b24'|Headline color|
-|bingo-color|color|black|The color for the numbers|
+Use Inkscapes XML-Editor to add following attributes to the bingo-area-rectangle (optional):
 
-Use Inkscapes XML-Editor to add the attributes. Attributes of the first bingo-area in the document will be applied to all following areas (if not redefined).
+|Attribute           |Type   |Description
+|--------------------|-------|-----------|
+|bingo-font-size     |float  |Font Size
+|bingo-columns       |int    |Number of columns
+|bingo-rows          |int    |Number of rows
+|bingo-column-range  |int    |Number range for each column
+|bingo-free-rows     |int    |Count of random free spaces in each row (british bingo)
+|bingo-free          |x.y;x.y|Semicolon (;) separated positions for free spaces. X and Y coordinates will be separated by a dot (.)
+|bingo-star          |boolean|If set to true, the number in the center will be replaced by a star
+|bingo-render-grid   |boolean|If set to true a grid will be rendered
+|bingo-headline      |string |The headline text
+|bingo-headline-color|color  |Headline color
+|bingo-color         |color  |The color for the numbers
 
-For a better understanding have a look at the [template example file](template_example.svg) in this repository.
+If an attribute remains undefined, settings from user input will apply. Attributes of previous bingo-areas in the document will be applied to next areas (if not redefined).
+
+For a better understanding have a look at the [template example file](resources/template_example.svg) in this repository.

@@ -24,7 +24,6 @@ If used with a template open it will insert itself into the correct positions.
 The template can force parameters through a rectangle with a special id starting with 'bingo-area'
 """
 
-from math import ceil
 from random import shuffle
 
 import inkex
@@ -40,7 +39,8 @@ class BingoCardCreator(inkex.GenerateExtension):
         pars.add_argument("--columns", type=int, default=5, dest="columns")
         pars.add_argument("--num_range", type=int, default=15, dest="num_range")
         pars.add_argument("--card_header", type=str, default="", dest="card_header")
-        pars.add_argument("--free", type=inkex.Boolean, default=True, dest="free")
+        pars.add_argument("--free_center", type=inkex.Boolean, default=True, dest="free_center")
+        pars.add_argument("--free_rows", type=int, default=0, dest="free_rows")
 
         pars.add_argument("--grid_size", type=int, default=20, dest="grid_size")
         pars.add_argument("--font_size", type=float, default=10, dest="font_size")
@@ -51,7 +51,8 @@ class BingoCardCreator(inkex.GenerateExtension):
 
     def generate(self):
         self.card_header = self.options.card_header
-        self.free = self.options.free
+        self.free_center = self.options.free_center
+        self.free_rows = self.options.free_rows
         self.columns = self.options.columns
         self.num_range = self.options.num_range
         self.rows = self.options.rows
@@ -84,7 +85,8 @@ class BingoCardCreator(inkex.GenerateExtension):
                 self.columns = int(bingo_field.get('bingo-columns', self.columns))
                 self.rows = int(bingo_field.get('bingo-rows', self.rows))
                 self.free_spaces = bingo_field.get('bingo-free', None)
-                self.free = inkex.Boolean(bingo_field.get('bingo-star', str(self.free)))
+                self.free_center = inkex.Boolean(bingo_field.get('bingo-star', str(self.free_center)))
+                self.free_rows = bingo_field.get('bingo-free-rows', self.free_rows)
                 self.render_grid = inkex.Boolean(bingo_field.get('bingo-render-grid', str(self.render_grid)))
                 self.card_header = bingo_field.get('bingo-headline', self.card_header)
                 self.header_color = inkex.Color(bingo_field.get('bingo-headline-color', self.header_color))
@@ -93,9 +95,11 @@ class BingoCardCreator(inkex.GenerateExtension):
                 if self.card_header == "none":
                     self.card_header = ""
 
+                # set grid size
                 self.grid_height = float(bingo_field.get('height')) / self.rows
                 self.grid_width = float(bingo_field.get('width')) / self.columns
 
+                # generate numbers and grid
                 numbers = self._get_numbers()
                 number_group = self._render_numbers(numbers)
                 grid_group = self._render_grid()
@@ -127,12 +131,18 @@ class BingoCardCreator(inkex.GenerateExtension):
             shuffle(num_range)
             num_range = num_range[:self.rows]
 
-            # apply free spaces
-            if self.free and i == ceil(self.rows / 2) - 1:
-                num_range[ceil(self.rows / 2) - 1] = "★"
-
             numbers.append(num_range)
 
+        numbers = self._apply_free_spaces(numbers)
+
+        # insert card header
+        if self.columns == len(self.card_header):
+            for i in range(self.columns):
+                numbers[i].insert(0, self.card_header[i])
+
+        return numbers
+
+    def _apply_free_spaces(self, numbers):
         # apply free spaces from template
         if self.free_spaces:
             spaces = self.free_spaces.split(';')
@@ -143,10 +153,18 @@ class BingoCardCreator(inkex.GenerateExtension):
                 except (IndexError, ValueError):
                     pass
 
-        # insert card header
-        if self.columns == len(self.card_header):
-            for i in range(self.columns):
-                numbers[i].insert(0, self.card_header[i])
+        # apply free spaces per rows
+        if self.free_rows > 0:
+            for i in range(self.rows):
+                free = list(range(1, self.columns + 1))
+                shuffle(free)
+                free = free[:self.free_rows]
+                for f in free:
+                    numbers[f - 1][i] = ""
+
+        # apply star at center
+        if self.free_center:
+            numbers[int(self.columns / 2)][int(self.rows / 2)] = "★"
 
         return numbers
 
