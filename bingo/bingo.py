@@ -35,7 +35,30 @@ XLINK_HREF = addNS('href', 'xlink')
 
 
 class BingoCardCreator(GenerateExtension):
+    """Outputs bingo cards as a svg fragment"""
+
     container_layer = True
+
+    def __init__(self, *args, **kwargs):
+        GenerateExtension.__init__(self, *args, **kwargs)
+
+        self.card_header = 'BINGO'
+        self.free_center = True
+        self.free_rows = 0
+        self.columns = 5
+        self.rows = 5
+        self.num_range = 15
+        self.font_size = 10.0
+        self.grid_height = 20
+        self.grid_width = 20
+        self.header_color = colors.Color('#e01b24')
+        self.num_color = colors.Color('#000000')
+        self.render_grid = False
+        self.stroke_width = 1
+        self.free_spaces = ''
+
+    def container_transform(self):
+        return Transform(translate=(0, 0))
 
     def add_arguments(self, pars):
         self.arg_parser.add_argument("--tabs", type=str, default=None, dest="tabs")
@@ -51,8 +74,10 @@ class BingoCardCreator(GenerateExtension):
 
         pars.add_argument("--grid_size", type=int, default=20, dest="grid_size")
         pars.add_argument("--font_size", type=float, default=10, dest="font_size")
-        pars.add_argument("--header_color", type=colors.Color, default=colors.Color('#e01b24'), dest="header_color")
-        pars.add_argument("--num_color", type=colors.Color, default=colors.Color('#000000'), dest="num_color")
+        pars.add_argument("--header_color", type=colors.Color, default=colors.Color('#e01b24'),
+                          dest="header_color")
+        pars.add_argument("--num_color", type=colors.Color, default=colors.Color('#000000'),
+                          dest="num_color")
         pars.add_argument("--render_grid", type=Boolean, default=True, dest="render_grid")
         pars.add_argument("--stroke_width", type=float, default=1, dest="stroke_width")
 
@@ -77,9 +102,9 @@ class BingoCardCreator(GenerateExtension):
 
         if self.rows < 1 or self.columns < 1:
             return
-
         # check if a bingo template is used
-        xpath = ".//svg:rect[starts-with(@id,'bingo-area')]|.//svg:use[starts-with(@id,'bingo-area')]"
+        xpath = ".//svg:rect[starts-with(@id,'bingo-area')]|\
+                 .//svg:use[starts-with(@id,'bingo-area')]"
         template_bingo_fields = self.svg.xpath(xpath)
         if not template_bingo_fields:
             numbers = self._get_numbers()
@@ -113,25 +138,7 @@ class BingoCardCreator(GenerateExtension):
                 number_group = self._render_numbers(numbers)
                 grid_group = self._render_grid()
 
-                # get correct positioning
-                transform_x = bingo_field.get('x', 0)
-                transform_y = bingo_field.get('y', 0)
-                transform = Transform('')
-
-                if bingo_group_transform is not None:
-                    transform = bingo_group_transform
-
-                bingo_field_transform = transform @ Transform(translate=(transform_x, transform_y))
-                transform = bingo_field.composed_transform() @ bingo_field_transform
-
-                # clone positioning
-                if bingo_clone is not None:
-                    transform_x = int(bingo_clone.get('x', 0))
-                    transform_y = int(bingo_clone.get('y', 0))
-
-                    transform = Transform(bingo_field.get('transform', '')) @ bingo_field_transform
-                    transform = Transform(translate=(transform_x, transform_y)) @ transform
-                    transform = bingo_clone.composed_transform() @ transform
+                transform = self._get_transform(bingo_field, bingo_clone, bingo_group_transform)
 
                 number_group.set('transform', transform)
                 if grid_group is not None:
@@ -143,43 +150,6 @@ class BingoCardCreator(GenerateExtension):
         # set a label to the automatically generated layer
         self._set_layer_label(number_group.getparent())
 
-    def container_transform(self):
-        return Transform(translate=(0, 0))
-
-    def _set_layer_label(self, layer):
-        bingo_layers = self.document.xpath(".//svg:g[starts-with(@inkscape:label, 'Bingo #')]/@inkscape:label", namespaces=NSS)
-        if bingo_layers:
-            bingo_layers = [int(layer[7:]) for layer in bingo_layers]
-            bingo_layers.sort(reverse=True)
-            num_layer = bingo_layers[0] + 1
-        else:
-            num_layer = 1
-        label = "Bingo #%d" % num_layer
-        layer.set("inkscape:label", label)
-
-    def _get_clone_origin(self, clone):
-        # returns the origin of the clone and transform information for grouped clones
-        bingo_group_transform = None
-        source_id = clone.get(XLINK_HREF)[1:]
-        xpath = ".//*[@id='%s']" % (source_id)
-        bingo_field = self.document.xpath(xpath)[0]
-        if bingo_field.tag_name == "g":
-            xpath = ".//svg:rect[starts-with(@id,'bingo-area')]"
-            bingo_field = bingo_field.xpath(xpath)
-            if not bingo_field:
-                return None, None
-            else:
-                bingo_field = bingo_field[0]
-                group_transforms = Transform('')
-                for ancestor in bingo_field.iterancestors():
-                    group_transforms = Transform(ancestor.get('transform', '')) @ group_transforms
-                    if ancestor.get('id', str()) == source_id:
-                        break
-                bingo_group_transform = group_transforms
-        if bingo_field.tag_name != "rect":
-            return None, None
-        return bingo_field, bingo_group_transform
-
     def _load_area_params(self, bingo_field):
         try:
             self.font_size = float(bingo_field.get('bingo-font-size', self.font_size))
@@ -189,14 +159,74 @@ class BingoCardCreator(GenerateExtension):
             self.free_center = Boolean(bingo_field.get('bingo-star', str(self.free_center)))
             self.free_rows = int(bingo_field.get('bingo-free-rows', self.free_rows))
             self.render_grid = Boolean(bingo_field.get('bingo-render-grid', str(self.render_grid)))
-            self.header_color = colors.Color(bingo_field.get('bingo-headline-color', self.header_color))
+            self.header_color = colors.Color(bingo_field.get('bingo-headline-color',
+                                             self.header_color))
             self.num_color = colors.Color(bingo_field.get('bingo-color', self.num_color))
             self.num_range = int(bingo_field.get('bingo-column-range', self.num_range))
             self.card_header = bingo_field.get('bingo-headline', self.card_header)
             if self.card_header == "none":
                 self.card_header = ""
         except (TypeError, ValueError, colors.ColorError):
-            errormsg(_("Please verify bingo attributes for %s: %s" % (bingo_field.get(INKSCAPE_LABEL, ''), bingo_field.get('id'))))
+            label = bingo_field.get(INKSCAPE_LABEL, '')
+            el_id = bingo_field.get('id')
+            errormsg(_(f'Please verify bingo attributes for {label}: {el_id}'))
+
+    def _get_transform(self, bingo_field, bingo_clone, bingo_group_transform):
+        # get correct positioning
+        transform_x = bingo_field.get('x', 0)
+        transform_y = bingo_field.get('y', 0)
+        transform = Transform('')
+
+        if bingo_group_transform is not None:
+            transform = bingo_group_transform
+
+        bingo_field_transform = transform @ Transform(translate=(transform_x, transform_y))
+        transform = bingo_field.composed_transform() @ bingo_field_transform
+
+        # clone positioning
+        if bingo_clone is not None:
+            transform_x = int(bingo_clone.get('x', 0))
+            transform_y = int(bingo_clone.get('y', 0))
+
+            transform = Transform(bingo_field.get('transform', '')) @ bingo_field_transform
+            transform = Transform(translate=(transform_x, transform_y)) @ transform
+            transform = bingo_clone.composed_transform() @ transform
+
+        return transform
+
+    def _set_layer_label(self, layer):
+        bingo_layers = self.document.xpath(".//svg:g[starts-with(@inkscape:label, 'Bingo #')]\
+                                           /@inkscape:label", namespaces=NSS)
+        if bingo_layers:
+            bingo_layers = [int(layer[7:]) for layer in bingo_layers]
+            bingo_layers.sort(reverse=True)
+            num_layer = bingo_layers[0] + 1
+        else:
+            num_layer = 1
+        label = f'Bingo #{num_layer}'
+        layer.set("inkscape:label", label)
+
+    def _get_clone_origin(self, clone):
+        # returns the origin of the clone and transform information for grouped clones
+        bingo_group_transform = None
+        source_id = clone.get(XLINK_HREF)[1:]
+        xpath = f'.//*[@id="{source_id}"]'
+        bingo_field = self.document.xpath(xpath)[0]
+        if bingo_field.tag_name == "g":
+            xpath = ".//svg:rect[starts-with(@id,'bingo-area')]"
+            bingo_field = bingo_field.xpath(xpath)
+            if not bingo_field:
+                return None, None
+            bingo_field = bingo_field[0]
+            group_transforms = Transform('')
+            for ancestor in bingo_field.iterancestors():
+                group_transforms = Transform(ancestor.get('transform', '')) @ group_transforms
+                if ancestor.get('id', str()) == source_id:
+                    break
+            bingo_group_transform = group_transforms
+        if bingo_field.tag_name != "rect":
+            return None, None
+        return bingo_field, bingo_group_transform
 
     def _get_numbers(self):
         numbers = []
@@ -235,8 +265,8 @@ class BingoCardCreator(GenerateExtension):
                 free = list(range(1, self.columns + 1))
                 shuffle(free)
                 free = free[:self.free_rows]
-                for f in free:
-                    numbers[f - 1][i] = ""
+                for free_space in free:
+                    numbers[free_space - 1][i] = ""
 
         # apply star at center
         if self.free_center:
@@ -245,54 +275,61 @@ class BingoCardCreator(GenerateExtension):
         return numbers
 
     def _render_numbers(self, numbers):
-        header_style = "fill:%s;font-size:%s;text-anchor:middle;" % (self.header_color, self.font_size)
-        element_style = "fill:%s;font-size:%s;text-anchor:middle;" % (self.num_color, self.font_size)
+        header_style = f'fill:{self.header_color};font-size:{self.font_size};text-anchor:middle;'
+        element_style = f'fill:{self.num_color};font-size:{self.font_size};text-anchor:middle;'
         text_element = TextElement(style=element_style)
 
         x_start = self.grid_width / 2
-        y = (self.font_size / 2) - (self.grid_height / 2)
+        y_coord = (self.font_size / 2) - (self.grid_height / 2)
         if not self.card_header:
-            y += self.grid_height
+            y_coord += self.grid_height
 
         # if the headline has a different length from "columns" use headline without grid spacings
         if self.columns != len(self.card_header) and self.card_header:
-            header = Tspan(self.card_header, style=header_style, x=str((self.columns * self.grid_width) / 2), y=str(y))
+            header = Tspan(self.card_header,
+                           style=header_style,
+                           x=str((self.columns * self.grid_width) / 2),
+                           y=str(y_coord))
             text_element.insert(0, header)
-            y += self.grid_height
+            y_coord += self.grid_height
 
         # insert number grid
         for i in range(len(numbers[0])):
-            x = x_start
+            x_coord = x_start
             for k in range(self.columns):
                 text = str(numbers[k][i])
-                element = Tspan(str(text), style=element_style, x=str(x), y=str(y))
-                if not text.isdigit() and not text == "★":
+                element = Tspan(str(text), style=element_style, x=str(x_coord), y=str(y_coord))
+                if not text.isdigit() and text != "★":
                     element.style = header_style
                 text_element.insert(len(text_element), element)
-                x += self.grid_width
-            y += self.grid_height
+                x_coord += self.grid_width
+            y_coord += self.grid_height
 
         return text_element
 
     def _render_grid(self):
         if not self.render_grid:
-            return
+            return None
 
         group = Group.new("Grid")
-        x = 0
-        y = 0
+        x_coord = 0
+        y_coord = 0
         rows = self.rows
-        style = "stroke:#000000;fill:none;stroke-linecap:square;stroke-width:%s" % self.stroke_width
+        style = f'stroke:#000000;fill:none;stroke-linecap:square;stroke-width:{self.stroke_width}'
 
-        for i in range(self.columns + 1):
-            element = Line().new((x, y), (x, rows * self.grid_height), style=style)
+        for _i in range(self.columns + 1):
+            element = Line().new((x_coord, y_coord),
+                                 (x_coord, rows * self.grid_height),
+                                 style=style)
             group.insert(0, element)
-            x += self.grid_width
+            x_coord += self.grid_width
 
-        for i in range(self.rows + 1):
-            element = Line().new((0, y), (self.columns * self.grid_width, y), style=style)
+        for _i in range(self.rows + 1):
+            element = Line().new((0, y_coord),
+                                 (self.columns * self.grid_width, y_coord),
+                                 style=style)
             group.insert(0, element)
-            y += self.grid_height
+            y_coord += self.grid_height
 
         return group
 

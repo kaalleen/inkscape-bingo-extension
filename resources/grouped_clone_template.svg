@@ -26,14 +26,14 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.89333698"
-     inkscape:cx="132.64871"
-     inkscape:cy="219.40209"
+     inkscape:cx="230.03637"
+     inkscape:cy="203.73051"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
      inkscape:window-y="32"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="g26104" />
   <defs
      id="defs57614">
     <linearGradient
@@ -87,7 +87,7 @@
        fx="40.805077"
        fy="34.786205"
        r="17.505934"
-       gradientTransform="matrix(0.69981967,0.85671736,-0.64365361,0.78957631,16.191889,-21.736596)"
+       gradientTransform="matrix(0.62944951,0.92900436,-0.68366315,0.69496177,20.455129,-22.712643)"
        gradientUnits="userSpaceOnUse" />
     <filter
        inkscape:collect="always"
@@ -164,57 +164,57 @@
        inkscape:label="Info"><tspan
          x="225.85307"
          y="22.135895"
-         id="tspan2926"><tspan
+         id="tspan4934"><tspan
            style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-           id="tspan2924">Bingo Card Creator
+           id="tspan4932">Bingo Card Creator
 </tspan></tspan><tspan
          x="225.85307"
          y="33.24839"
-         id="tspan2930"><tspan
+         id="tspan4938"><tspan
    style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-   id="tspan2928">Template sample file</tspan>
+   id="tspan4936">Template sample file</tspan>
 </tspan><tspan
          x="225.85307"
          y="44.360888"
-         id="tspan2932">
+         id="tspan4940">
 </tspan><tspan
          x="225.85307"
          y="55.473383"
-         id="tspan2934">Changes can be applied to the </tspan><tspan
+         id="tspan4942">Changes can be applied to the </tspan><tspan
          x="225.85307"
          y="66.585879"
-         id="tspan2936">top left bingo area.
+         id="tspan4944">top left bingo area.
 </tspan><tspan
          x="225.85307"
          y="77.698374"
-         id="tspan2938">
+         id="tspan4946">
 </tspan><tspan
          x="225.85307"
          y="88.81087"
-         id="tspan2940">Use the XML-Editor to explore </tspan><tspan
+         id="tspan4948">Use the XML-Editor to explore </tspan><tspan
          x="225.85307"
          y="99.923365"
-         id="tspan2942">the specific attributes of the </tspan><tspan
+         id="tspan4950">the specific attributes of the </tspan><tspan
          x="225.85307"
          y="111.03586"
-         id="tspan2944">white bingo-area rectangle).
+         id="tspan4952">white bingo-area rectangle).
 </tspan><tspan
          x="225.85307"
          y="122.14836"
-         id="tspan2946">
+         id="tspan4954">
 </tspan><tspan
          x="225.85307"
          y="133.26085"
-         id="tspan2948">Run Extensions &gt; Render &gt; </tspan><tspan
+         id="tspan4956">Run Extensions &gt; Render &gt; </tspan><tspan
          x="225.85307"
          y="144.37335"
-         id="tspan2950">Bingo Card Creator to include </tspan><tspan
+         id="tspan4958">Bingo Card Creator to include </tspan><tspan
          x="225.85307"
          y="155.48583"
-         id="tspan2952">randomized numbers into each </tspan><tspan
+         id="tspan4960">randomized numbers into each </tspan><tspan
          x="225.85307"
          y="166.59832"
-         id="tspan2954">bingo area field.</tspan></text>
+         id="tspan4962">bingo area field.</tspan></text>
   </g>
   <g
      inkscape:label="Layer 1"
@@ -253,7 +253,7 @@
         <g
            id="g26104"
            transform="translate(-3.9218612,1.8860045)"
-           style="opacity:0.96298;stroke-width:0.753589"
+           style="opacity:0.70754352;stroke-width:0.753589"
            clip-path="url(#clipPath33060)">
           <ellipse
              style="opacity:0.73997;mix-blend-mode:normal;fill:#48696a;fill-opacity:1;stroke-width:1.04505;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.666667;filter:url(#filter26098)"
@@ -263,12 +263,12 @@
              rx="17.654619"
              ry="21.634907" />
           <ellipse
-             style="fill:url(#radialGradient26092);fill-opacity:1;stroke-width:1.04505;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.666667"
+             style="opacity:1;fill:url(#radialGradient26092);fill-opacity:1;stroke-width:1.04505;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.666667"
              id="path26084"
              cx="37.460342"
-             cy="44.402138"
+             cy="43.084488"
              rx="17.654619"
-             ry="21.634907" />
+             ry="20.750387" />
         </g>
         <rect
            style="opacity:0.954247;fill:#131083;fill-opacity:1;stroke-width:1.05965;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.666667;filter:url(#filter26270)"
