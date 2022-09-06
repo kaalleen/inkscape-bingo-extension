@@ -32,6 +32,9 @@ XLINK_HREF = inkex.addNS('href', 'xlink')
 
 
 class BingoCardCreator(inkex.GenerateExtension):
+    container_layer = True
+    container_label = "Bingo"
+
     def add_arguments(self, pars):
         self.arg_parser.add_argument("--tabs", type=str, default=None, dest="tabs")
         self.arg_parser.add_argument("--content", type=str, default=None, dest="content")
@@ -82,12 +85,14 @@ class BingoCardCreator(inkex.GenerateExtension):
             yield grid_group
         else:
             for bingo_field in template_bingo_fields:
-                # set clone to its origin for now
+                # reset clone and bingo_group_transform
                 bingo_clone = None
+                bingo_group_transform = None
+
                 if bingo_field.tag_name == "use":
                     bingo_clone = bingo_field
-                    bingo_field = self._get_clone_origin(bingo_field)
-                    if not bingo_field.tag_name == "rect":
+                    bingo_field, bingo_group_transform = self._get_clone_origin(bingo_field)
+                    if bingo_field is None:
                         continue
 
                 # get template params
@@ -116,17 +121,23 @@ class BingoCardCreator(inkex.GenerateExtension):
                 grid_group = self._render_grid()
 
                 # get correct positioning
-                transform = bingo_field.composed_transform()
                 transform_x = bingo_field.get('x', 0)
                 transform_y = bingo_field.get('y', 0)
-                bingo_field_transform = inkex.Transform(translate=(transform_x, transform_y))
-                transform = transform @ bingo_field_transform
+                transform = inkex.Transform('')
+
+                if bingo_group_transform is not None:
+                    transform = bingo_group_transform
+
+                bingo_field_transform = transform @ inkex.Transform(translate=(transform_x, transform_y))
+                transform = bingo_field.composed_transform() @ bingo_field_transform
 
                 # clone positioning
                 if bingo_clone is not None:
-                    transform_x = bingo_clone.get('x', 0)
-                    transform_y = bingo_clone.get('y', 0)
-                    transform = inkex.Transform(translate=(transform_x, transform_y)) @ bingo_field_transform
+                    transform_x = int(bingo_clone.get('x', 0))
+                    transform_y = int(bingo_clone.get('y', 0))
+
+                    transform = inkex.Transform(bingo_field.get('transform', '')) @ bingo_field_transform
+                    transform = inkex.Transform(translate=(transform_x, transform_y)) @ transform
                     transform = bingo_clone.composed_transform() @ transform
 
                 number_group.set('transform', transform)
@@ -136,16 +147,31 @@ class BingoCardCreator(inkex.GenerateExtension):
                 yield number_group
                 yield grid_group
 
-        # set a label to the automatically generated group
-        number_group.getparent().set("inkscape:label", "Bingo")
-
     def container_transform(self):
         return inkex.Transform(translate=(0, 0))
 
     def _get_clone_origin(self, clone):
+        # returns the origin of the clone and transform information for grouped clones
+        bingo_group_transform = None
         source_id = clone.get(XLINK_HREF)[1:]
         xpath = ".//*[@id='%s']" % (source_id)
-        return self.document.xpath(xpath)[0]
+        bingo_field = self.document.xpath(xpath)[0]
+        if bingo_field.tag_name == "g":
+            xpath = ".//svg:rect[starts-with(@id,'bingo-area')]"
+            bingo_field = bingo_field.xpath(xpath)
+            if not bingo_field:
+                return None, None
+            else:
+                bingo_field = bingo_field[0]
+                group_transforms = inkex.Transform('')
+                for ancestor in bingo_field.iterancestors():
+                    group_transforms = inkex.Transform(ancestor.get('transform', '')) @ group_transforms
+                    if ancestor.get('id', str()) == source_id:
+                        break
+                bingo_group_transform = group_transforms
+        if bingo_field.tag_name != "rect":
+            return None, None
+        return bingo_field, bingo_group_transform
 
     def _get_numbers(self):
         numbers = []
