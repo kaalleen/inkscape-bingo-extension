@@ -26,14 +26,16 @@ The template can force parameters through a rectangle with a special id starting
 
 from random import shuffle
 
-import inkex
+from inkex import (NSS, Boolean, GenerateExtension, Group, Line, TextElement,
+                   Transform, Tspan, addNS, colors, errormsg)
+from inkex.localization import inkex_gettext as _
 
-XLINK_HREF = inkex.addNS('href', 'xlink')
+INKSCAPE_LABEL = addNS('label', 'inkscape')
+XLINK_HREF = addNS('href', 'xlink')
 
 
-class BingoCardCreator(inkex.GenerateExtension):
+class BingoCardCreator(GenerateExtension):
     container_layer = True
-    container_label = "Bingo"
 
     def add_arguments(self, pars):
         self.arg_parser.add_argument("--tabs", type=str, default=None, dest="tabs")
@@ -44,14 +46,14 @@ class BingoCardCreator(inkex.GenerateExtension):
         pars.add_argument("--columns", type=int, default=5, dest="columns")
         pars.add_argument("--num_range", type=int, default=15, dest="num_range")
         pars.add_argument("--card_header", type=str, default="", dest="card_header")
-        pars.add_argument("--free_center", type=inkex.Boolean, default=True, dest="free_center")
+        pars.add_argument("--free_center", type=Boolean, default=True, dest="free_center")
         pars.add_argument("--free_rows", type=int, default=0, dest="free_rows")
 
         pars.add_argument("--grid_size", type=int, default=20, dest="grid_size")
         pars.add_argument("--font_size", type=float, default=10, dest="font_size")
-        pars.add_argument("--header_color", type=inkex.Color, default=inkex.Color('#e01b24'), dest="header_color")
-        pars.add_argument("--num_color", type=inkex.Color, default=inkex.Color('#000000'), dest="num_color")
-        pars.add_argument("--render_grid", type=inkex.Boolean, default=True, dest="render_grid")
+        pars.add_argument("--header_color", type=colors.Color, default=colors.Color('#e01b24'), dest="header_color")
+        pars.add_argument("--num_color", type=colors.Color, default=colors.Color('#000000'), dest="num_color")
+        pars.add_argument("--render_grid", type=Boolean, default=True, dest="render_grid")
         pars.add_argument("--stroke_width", type=float, default=1, dest="stroke_width")
 
     def generate(self):
@@ -73,9 +75,12 @@ class BingoCardCreator(inkex.GenerateExtension):
         if self.num_range < self.rows:
             self.rows = self.num_range
 
+        if self.rows < 1 or self.columns < 1:
+            return
+
         # check if a bingo template is used
         xpath = ".//svg:rect[starts-with(@id,'bingo-area')]|.//svg:use[starts-with(@id,'bingo-area')]"
-        template_bingo_fields = self.svg.xpath(xpath, namespaces=inkex.NSS)
+        template_bingo_fields = self.svg.xpath(xpath)
         if not template_bingo_fields:
             numbers = self._get_numbers()
             number_group = self._render_numbers(numbers)
@@ -95,21 +100,9 @@ class BingoCardCreator(inkex.GenerateExtension):
                     if bingo_field is None:
                         continue
 
-                # get template params
-                # params of first bingo field will also be used for the others - if not defined specifically
-                self.font_size = float(bingo_field.get('bingo-font-size', self.font_size))
-                self.columns = int(bingo_field.get('bingo-columns', self.columns))
-                self.rows = int(bingo_field.get('bingo-rows', self.rows))
-                self.free_spaces = bingo_field.get('bingo-free', None)
-                self.free_center = inkex.Boolean(bingo_field.get('bingo-star', str(self.free_center)))
-                self.free_rows = bingo_field.get('bingo-free-rows', self.free_rows)
-                self.render_grid = inkex.Boolean(bingo_field.get('bingo-render-grid', str(self.render_grid)))
-                self.card_header = bingo_field.get('bingo-headline', self.card_header)
-                self.header_color = inkex.Color(bingo_field.get('bingo-headline-color', self.header_color))
-                self.num_color = inkex.Color(bingo_field.get('bingo-color', self.num_color))
-                self.num_range = int(bingo_field.get('bingo-column-range', self.num_range))
-                if self.card_header == "none":
-                    self.card_header = ""
+                # template params
+                # if not overwritten parameters are carried over to subsequent areas
+                self._load_area_params(bingo_field)
 
                 # set grid size
                 self.grid_height = float(bingo_field.get('height')) / self.rows
@@ -123,12 +116,12 @@ class BingoCardCreator(inkex.GenerateExtension):
                 # get correct positioning
                 transform_x = bingo_field.get('x', 0)
                 transform_y = bingo_field.get('y', 0)
-                transform = inkex.Transform('')
+                transform = Transform('')
 
                 if bingo_group_transform is not None:
                     transform = bingo_group_transform
 
-                bingo_field_transform = transform @ inkex.Transform(translate=(transform_x, transform_y))
+                bingo_field_transform = transform @ Transform(translate=(transform_x, transform_y))
                 transform = bingo_field.composed_transform() @ bingo_field_transform
 
                 # clone positioning
@@ -136,8 +129,8 @@ class BingoCardCreator(inkex.GenerateExtension):
                     transform_x = int(bingo_clone.get('x', 0))
                     transform_y = int(bingo_clone.get('y', 0))
 
-                    transform = inkex.Transform(bingo_field.get('transform', '')) @ bingo_field_transform
-                    transform = inkex.Transform(translate=(transform_x, transform_y)) @ transform
+                    transform = Transform(bingo_field.get('transform', '')) @ bingo_field_transform
+                    transform = Transform(translate=(transform_x, transform_y)) @ transform
                     transform = bingo_clone.composed_transform() @ transform
 
                 number_group.set('transform', transform)
@@ -147,8 +140,22 @@ class BingoCardCreator(inkex.GenerateExtension):
                 yield number_group
                 yield grid_group
 
+        # set a label to the automatically generated layer
+        self._set_layer_label(number_group.getparent())
+
     def container_transform(self):
-        return inkex.Transform(translate=(0, 0))
+        return Transform(translate=(0, 0))
+
+    def _set_layer_label(self, layer):
+        bingo_layers = self.document.xpath(".//svg:g[starts-with(@inkscape:label, 'Bingo #')]/@inkscape:label", namespaces=NSS)
+        if bingo_layers:
+            bingo_layers = [int(layer[7:]) for layer in bingo_layers]
+            bingo_layers.sort(reverse=True)
+            num_layer = bingo_layers[0] + 1
+        else:
+            num_layer = 1
+        label = "Bingo #%d" % num_layer
+        layer.set("inkscape:label", label)
 
     def _get_clone_origin(self, clone):
         # returns the origin of the clone and transform information for grouped clones
@@ -163,15 +170,33 @@ class BingoCardCreator(inkex.GenerateExtension):
                 return None, None
             else:
                 bingo_field = bingo_field[0]
-                group_transforms = inkex.Transform('')
+                group_transforms = Transform('')
                 for ancestor in bingo_field.iterancestors():
-                    group_transforms = inkex.Transform(ancestor.get('transform', '')) @ group_transforms
+                    group_transforms = Transform(ancestor.get('transform', '')) @ group_transforms
                     if ancestor.get('id', str()) == source_id:
                         break
                 bingo_group_transform = group_transforms
         if bingo_field.tag_name != "rect":
             return None, None
         return bingo_field, bingo_group_transform
+
+    def _load_area_params(self, bingo_field):
+        try:
+            self.font_size = float(bingo_field.get('bingo-font-size', self.font_size))
+            self.columns = int(bingo_field.get('bingo-columns', self.columns))
+            self.rows = int(bingo_field.get('bingo-rows', self.rows))
+            self.free_spaces = bingo_field.get('bingo-free', None)
+            self.free_center = Boolean(bingo_field.get('bingo-star', str(self.free_center)))
+            self.free_rows = int(bingo_field.get('bingo-free-rows', self.free_rows))
+            self.render_grid = Boolean(bingo_field.get('bingo-render-grid', str(self.render_grid)))
+            self.header_color = colors.Color(bingo_field.get('bingo-headline-color', self.header_color))
+            self.num_color = colors.Color(bingo_field.get('bingo-color', self.num_color))
+            self.num_range = int(bingo_field.get('bingo-column-range', self.num_range))
+            self.card_header = bingo_field.get('bingo-headline', self.card_header)
+            if self.card_header == "none":
+                self.card_header = ""
+        except (TypeError, ValueError, colors.ColorError):
+            errormsg(_("Please verify bingo attributes for %s: %s" % (bingo_field.get(INKSCAPE_LABEL, ''), bingo_field.get('id'))))
 
     def _get_numbers(self):
         numbers = []
@@ -220,52 +245,52 @@ class BingoCardCreator(inkex.GenerateExtension):
         return numbers
 
     def _render_numbers(self, numbers):
-        x = self.grid_width / 2
-        y_start = (self.font_size / 2) - (self.grid_height / 2)
-        if not self.card_header:
-            y_start += self.grid_height
-
         header_style = "fill:%s;font-size:%s;text-anchor:middle;" % (self.header_color, self.font_size)
         element_style = "fill:%s;font-size:%s;text-anchor:middle;" % (self.num_color, self.font_size)
-        text_element = inkex.TextElement(style=element_style)
+        text_element = TextElement(style=element_style)
+
+        x_start = self.grid_width / 2
+        y = (self.font_size / 2) - (self.grid_height / 2)
+        if not self.card_header:
+            y += self.grid_height
 
         # if the headline has a different length from "columns" use headline without grid spacings
         if self.columns != len(self.card_header) and self.card_header:
-            header = inkex.Tspan(self.card_header, style=header_style, x=str((self.columns * self.grid_width) / 2), y=str(y_start))
+            header = Tspan(self.card_header, style=header_style, x=str((self.columns * self.grid_width) / 2), y=str(y))
             text_element.insert(0, header)
-            y_start += self.grid_height
+            y += self.grid_height
 
-        # insert numbers as a grid
-        for n in numbers:
-            y = y_start
-            for i, text in enumerate(n):
-                element = inkex.Tspan(str(text), style=element_style, x=str(x), y=str(y))
-                # set style for header elements
-                if self.columns == len(self.card_header) and i == 0:
+        # insert number grid
+        for i in range(len(numbers[0])):
+            x = x_start
+            for k in range(self.columns):
+                text = str(numbers[k][i])
+                element = Tspan(str(text), style=element_style, x=str(x), y=str(y))
+                if not text.isdigit() and not text == "★":
                     element.style = header_style
-                # insert into group
-                text_element.insert(0, element)
-                y += self.grid_height
-            x += self.grid_width
+                text_element.insert(len(text_element), element)
+                x += self.grid_width
+            y += self.grid_height
+
         return text_element
 
     def _render_grid(self):
         if not self.render_grid:
             return
 
-        group = inkex.Group.new("Grid")
+        group = Group.new("Grid")
         x = 0
         y = 0
         rows = self.rows
         style = "stroke:#000000;fill:none;stroke-linecap:square;stroke-width:%s" % self.stroke_width
 
         for i in range(self.columns + 1):
-            element = inkex.Line().new((x, y), (x, rows * self.grid_height), style=style)
+            element = Line().new((x, y), (x, rows * self.grid_height), style=style)
             group.insert(0, element)
             x += self.grid_width
 
         for i in range(self.rows + 1):
-            element = inkex.Line().new((0, y), (self.columns * self.grid_width, y), style=style)
+            element = Line().new((0, y), (self.columns * self.grid_width, y), style=style)
             group.insert(0, element)
             y += self.grid_height
 
