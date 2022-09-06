@@ -25,29 +25,29 @@ Use Inkscapes XML-Editor to add following attributes to the bingo-area-rectangle
 
 #### Layout options
 
-|Attribute           |Type   |Description
-|--------------------|-------|-----------|
-|bingo-columns       |int    |Number of columns
-|bingo-rows          |int    |Number of rows
-|bingo-column-range  |int    |Number range for each column
-|bingo-render-grid   |boolean|If set to true a grid will be rendered
+|Attribute           |Type   |Example |Description
+|--------------------|-------|--------|-----------|
+|bingo-columns       |int    |5       |Number of columns
+|bingo-rows          |int    |5       |Number of rows
+|bingo-column-range  |int    |15      |Number range for each column
+|bingo-render-grid   |boolean|false   |If set to true a grid will be rendered
 
 #### Headline, font and colors
 
-|Attribute           |Type   |Description
-|--------------------|-------|-----------|
-|bingo-headline      |string |The headline text (`none` for no headline)
-|bingo-font-size     |float  |Font Size
-|bingo-headline-color|color  |Headline color
-|bingo-color         |color  |The color for the numbers
+|Attribute           |Type   |Example |Description
+|--------------------|-------|--------|-----------|
+|bingo-headline      |string |BINGO   |The headline text (`none`: no headline)
+|bingo-font-size     |float  |20.5    |Font Size
+|bingo-headline-color|color  |black   |Headline color
+|bingo-color         |color  |#000000 |The color for the numbers
 
 #### Free spaces
 
-|Attribute           |Type   |Description
-|--------------------|-------|-----------|
-|bingo-free-rows     |int    |Count of random free spaces in each row (british bingo)
-|bingo-free          |x.y;x.y|Semicolon (;) separated positions for free spaces. X and Y coordinates will be separated by a dot (.)
-|bingo-star          |boolean|If set to true, the number in the center will be replaced by a star
+|Attribute           |Type   |Example |Description
+|--------------------|-------|--------|-----------|
+|bingo-free-rows     |int    |0       |Count of random free spaces in each row (british bingo)
+|bingo-free          |x.y;x.y|1.2;3.3 |Semicolon (;) separated positions for free spaces. X and Y coordinates will be separated by a dot (.)
+|bingo-star          |boolean|false   |If set to true, the number in the center will be replaced by a star
 
 If an attribute remains undefined, settings from user input will apply. Attributes will be carried over to subsequent areas - until overwritten.
 
