@@ -26,14 +26,14 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.89333698"
-     inkscape:cx="230.03637"
+     inkscape:cx="100.18616"
      inkscape:cy="203.73051"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
      inkscape:window-y="32"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g26104" />
+     inkscape:current-layer="g59320" />
   <defs
      id="defs57614">
     <linearGradient
@@ -164,57 +164,57 @@
        inkscape:label="Info"><tspan
          x="225.85307"
          y="22.135895"
-         id="tspan4934"><tspan
+         id="tspan21638"><tspan
            style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-           id="tspan4932">Bingo Card Creator
+           id="tspan21636">Bingo Card Creator
 </tspan></tspan><tspan
          x="225.85307"
          y="33.24839"
-         id="tspan4938"><tspan
+         id="tspan21642"><tspan
    style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold'"
-   id="tspan4936">Template sample file</tspan>
+   id="tspan21640">Template sample file</tspan>
 </tspan><tspan
          x="225.85307"
          y="44.360888"
-         id="tspan4940">
+         id="tspan21644">
 </tspan><tspan
          x="225.85307"
          y="55.473383"
-         id="tspan4942">Changes can be applied to the </tspan><tspan
+         id="tspan21646">Changes can be applied to the </tspan><tspan
          x="225.85307"
          y="66.585879"
-         id="tspan4944">top left bingo area.
+         id="tspan21648">top left bingo area.
 </tspan><tspan
          x="225.85307"
          y="77.698374"
-         id="tspan4946">
+         id="tspan21650">
 </tspan><tspan
          x="225.85307"
          y="88.81087"
-         id="tspan4948">Use the XML-Editor to explore </tspan><tspan
+         id="tspan21652">Use the XML-Editor to explore </tspan><tspan
          x="225.85307"
          y="99.923365"
-         id="tspan4950">the specific attributes of the </tspan><tspan
+         id="tspan21654">the specific attributes of the </tspan><tspan
          x="225.85307"
          y="111.03586"
-         id="tspan4952">white bingo-area rectangle).
+         id="tspan21656">white bingo-area rectangle).
 </tspan><tspan
          x="225.85307"
          y="122.14836"
-         id="tspan4954">
+         id="tspan21658">
 </tspan><tspan
          x="225.85307"
          y="133.26085"
-         id="tspan4956">Run Extensions &gt; Render &gt; </tspan><tspan
+         id="tspan21660">Run Extensions &gt; Render &gt; </tspan><tspan
          x="225.85307"
          y="144.37335"
-         id="tspan4958">Bingo Card Creator to include </tspan><tspan
+         id="tspan21662">Bingo Card Creator to include </tspan><tspan
          x="225.85307"
          y="155.48583"
-         id="tspan4960">randomized numbers into each </tspan><tspan
+         id="tspan21664">randomized numbers into each </tspan><tspan
          x="225.85307"
          y="166.59832"
-         id="tspan4962">bingo area field.</tspan></text>
+         id="tspan21666">bingo area field.</tspan></text>
   </g>
   <g
      inkscape:label="Layer 1"
@@ -295,7 +295,8 @@
          bingo-render-grid="false"
          bingo-headline="none"
          bingo-color="#0a165f"
-         bingo-free="3.3" />
+         bingo-free="3.3"
+         bingo-star="false" />
       <g
          aria-label="B I N G O"
          transform="matrix(0.90334088,0,0,1.1070018,-0.08513425,-0.20907276)"

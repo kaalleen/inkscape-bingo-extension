@@ -27,11 +27,8 @@ The template can force parameters through a rectangle with a special id starting
 from random import shuffle
 
 from inkex import (NSS, Boolean, GenerateExtension, Group, Line, TextElement,
-                   Transform, Tspan, addNS, colors, errormsg)
+                   Transform, Tspan, colors, errormsg)
 from inkex.localization import inkex_gettext as _
-
-INKSCAPE_LABEL = addNS('label', 'inkscape')
-XLINK_HREF = addNS('href', 'xlink')
 
 
 class BingoCardCreator(GenerateExtension):
@@ -55,7 +52,7 @@ class BingoCardCreator(GenerateExtension):
         self.num_color = colors.Color('#000000')
         self.render_grid = False
         self.stroke_width = 1
-        self.free_spaces = ''
+        self.free_spaces = None
 
     def container_transform(self):
         return Transform(translate=(0, 0))
@@ -95,7 +92,6 @@ class BingoCardCreator(GenerateExtension):
         self.num_color = self.options.num_color
         self.render_grid = self.options.render_grid
         self.stroke_width = self.options.stroke_width
-        self.free_spaces = None
         # if num_range is smaller than the rows, reduce rows to num_range
         if self.num_range < self.rows:
             self.rows = self.num_range
@@ -139,7 +135,6 @@ class BingoCardCreator(GenerateExtension):
                 grid_group = self._render_grid()
 
                 transform = self._get_transform(bingo_field, bingo_clone, bingo_group_transform)
-
                 number_group.set('transform', transform)
                 if grid_group is not None:
                     grid_group.set('transform', transform)
@@ -167,7 +162,7 @@ class BingoCardCreator(GenerateExtension):
             if self.card_header == "none":
                 self.card_header = ""
         except (TypeError, ValueError, colors.ColorError):
-            label = bingo_field.get(INKSCAPE_LABEL, '')
+            label = bingo_field.label
             el_id = bingo_field.get('id')
             errormsg(_(f'Please verify bingo attributes for {label}: {el_id}'))
 
@@ -209,9 +204,8 @@ class BingoCardCreator(GenerateExtension):
     def _get_clone_origin(self, clone):
         # returns the origin of the clone and transform information for grouped clones
         bingo_group_transform = None
-        source_id = clone.get(XLINK_HREF)[1:]
-        xpath = f'.//*[@id="{source_id}"]'
-        bingo_field = self.document.xpath(xpath)[0]
+        bingo_field = clone.href
+        source_id = bingo_field.get_id()
         if bingo_field.tag_name == "g":
             xpath = ".//svg:rect[starts-with(@id,'bingo-area')]"
             bingo_field = bingo_field.xpath(xpath)
