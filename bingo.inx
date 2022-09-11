@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Bingo Card Creator</name>
+  <id>org.kaalleen.bingo</id>
+  <effect>
+    <object-type>all</object-type>
+    <effects-menu>
+        <submenu name="Render" />
+    </effects-menu>
+  </effect>
+  <param name="tabs" type="notebook">
+      <page name="content-tab" gui-text="Content">
+          <param name="card_header" type="string" gui-text="Headline">BINGO</param>
+          <param name="rows" type="int" gui-text="Rows" min="0" max="50">5</param>
+          <param name="columns" type="int" gui-text="Columns" min="0" max="50">5</param>
+          <param name="num_range" type="int" gui-text="Number range per column"
+                 min="0" max="50">15</param>
+          <param name="free_rows" type="int" gui-text="Free spaces per row"
+                 min="0" max="50">0</param>
+          <param name="free_center" type="boolean" gui-text="Free space at center">true</param>
+          <spacer />
+          <separator />
+          <spacer />
+          <label>☛ If used on a bingo template your custom settings may be overwritten by the
+                 template.</label>
+      </page>
+      <page name="layout-tab" gui-text="Layout">
+          <param name="font_size" type="float" gui-text="Font Size" min="0" max="200"
+                 precision="2">14</param>
+          <param name="header_color" type="color" gui-text="Header Color"
+                 appearance="colorbutton">0x990000ff</param>
+          <param name="num_color" type="color" gui-text="Numbers Color"
+                 appearance="colorbutton">0x000000ff</param>
+          <param name="grid_size" type="float" gui-text="Grid Size" min="0" max="500"
+                 precision="2">20</param>
+          <spacer />
+          <separator />
+          <spacer />
+          <param name="render_grid" type="boolean" gui-text="Render Grid">true</param>
+          <param name="stroke_width" type="float" gui-text="Stroke width" precision="2">1</param>
+      </page>
+      <page name="template-tab" gui-text="Template">
+          <label appearance="header">Template Creation Helper</label>
+          <param name="create_area" type="boolean" gui-text="Create bingo area">false</param>
+          <label>☛ If enabled a bingo area rectangle with content and layout settings will be
+                 placed into the document. This area will be filled with random bingo numbers the
+                 next time this extension is run (with create bingo area disabled).</label>
+          <label>☛ The area can be copied or cloned. For more complex templates it is even possible
+                 to clone an entire group with a bingo area included. The label for copies and
+                 clones also need to start with "Bingo Area".</label>
+      </page>
+  </param>
+  <script>
+    <command reldir="extensions" interpreter="python">bingo.py</command>
+  </script>
+</inkscape-extension>

@@ -12,7 +12,7 @@ jobs:
         - name: Make a file
           shell: bash
           run: |
-            7z a bingo-${{ github.ref_name }}.zip bingo/ resources/ README.md LICENSE
+            7z a bingo-${{ github.ref_name }}.zip bingo.py bingo.inx README.md LICENSE samples/ preview/
         - name: Upload Bingo zip
           uses: actions/upload-artifact@v3
           with:

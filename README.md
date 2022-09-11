@@ -13,13 +13,24 @@ Works with Inkscape 1.2
 * Open Extensions > Render > Bingo Card Creator
 * Set parameters as necessary and apply
 
-![Bingo params preview](resources/preview.jpg)
+![Bingo params preview](preview/preview.jpg)
 
 ## Bingo Templates
 
-When a template has been opened in Inkscape before this extension is run, it will insert the bingo numbers into the predefined area(s).
+When the extension is used on a document (template) with a bingo area, it will insert the bingo numbers into the predefined area(s) with predefined settings.
 
-Create a bingo template by setting the id of a rectangle to `bingo-area`. For multiple areas append numbers to the id such as `bingo-area_1`. Clones of bingo-area-rectangles or clones of groups can also be used by setting their id accordingly.
+### Create Bingo Areas
+
+* Open the Bingo Card Creator extension and set your content and layout settings.
+* Switch to the template tab and enable `create bingo area` and apply.
+
+![Bingo template param](preview/create_bingo_area.jpg)
+
+This will include a bingo area into your document. You can now design your template. Group your design, select the group and clone the group. Label the clone to `Bingo Area` in the layer and objects dialog (Object > Layers and Objects). Create as many clones as you need. When finished run the Bingo Card Creator extension again. Disable create bingo area in the template tab and apply. All bingo areas will be filled with random numbers at once.
+
+### Manual setup of bingo areas
+
+Create a bingo template by setting the label of a rectangle to `Bingo Area`. Clones of bingo-area-rectangles or clones of groups can also be used by setting their label accordingly. Optionally append numbers to the label such as `Bingo Area #1` when multiple areas are in the document.
 
 Use Inkscapes XML-Editor to add following attributes to the bingo-area-rectangle (optional):
 
@@ -51,4 +62,4 @@ Use Inkscapes XML-Editor to add following attributes to the bingo-area-rectangle
 
 If an attribute remains undefined, settings from user input will apply. Attributes will be carried over to subsequent areas - until overwritten.
 
-For a better understanding have a look at the [template example file](resources/template_example.svg) in this repository.
+For a better understanding have a look at the samples in this repository.
