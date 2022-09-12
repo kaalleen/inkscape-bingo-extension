@@ -34,15 +34,6 @@ Create a bingo template by setting the label of a rectangle to `Bingo Area`. Clo
 
 Use Inkscapes XML-Editor to add following attributes to the bingo-area-rectangle (optional):
 
-#### Layout options
-
-|Attribute           |Type   |Example |Description
-|--------------------|-------|--------|-----------|
-|bingo-columns       |int    |5       |Number of columns
-|bingo-rows          |int    |5       |Number of rows
-|bingo-column-range  |int    |15      |Number range for each column
-|bingo-render-grid   |boolean|false   |If set to true a grid will be rendered
-
 #### Headline, font and colors
 
 |Attribute           |Type   |Example |Description
@@ -51,6 +42,17 @@ Use Inkscapes XML-Editor to add following attributes to the bingo-area-rectangle
 |bingo-font-size     |float  |20.5    |Font Size
 |bingo-headline-color|color  |black   |Headline color
 |bingo-color         |color  |#000000 |The color for the numbers
+
+#### Layout options
+
+|Attribute           |Type   |Example |Description
+|--------------------|-------|--------|-----------|
+|bingo-columns       |int    |5       |Number of columns
+|bingo-rows          |int    |5       |Number of rows
+|bingo-column-range  |int    |15      |Number range for each column
+|bingo-render-grid   |boolean|false   |If set to true a grid will be rendered
+|bingo-stroke-width  |int    |1       |Grid stroke width in document units
+
 
 #### Free spaces
 
