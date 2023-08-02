@@ -56,7 +56,7 @@ class BingoCardCreator(GenerateExtension):
         # grid
         pars.add_argument("--rows", type=int, default=5, dest="rows")
         pars.add_argument("--columns", type=int, default=5, dest="columns")
-        pars.add_argument("--grid_size", type=int, default=20, dest="grid_size")
+        pars.add_argument("--grid_size", type=float, default=20, dest="grid_size")
         pars.add_argument("--render_grid", type=Boolean, default=True, dest="render_grid")
         pars.add_argument("--stroke_width", type=float, default=1, dest="stroke_width")
         pars.add_argument("--num_range", type=int, default=15, dest="num_range")

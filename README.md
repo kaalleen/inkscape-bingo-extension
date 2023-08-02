@@ -1,10 +1,18 @@
 ## Inkscape Extension: Bingo Card Creator
 
-Adds "Bingo Card Creator" to the Inkscape Extensions list.
+Create Bingo cards with Inkscape.
 
 ### How To Install
 
-Copy the bingo folder from this repository into the Inkscape extensions folder.
+Open Inkscape and run `Extensions > Manage Extensions ...`
+
+Go to the second tab (Install Packages) and select "Bingo Card Creator" from the list and click on `Install Package`.
+
+---
+
+Alternatively download the zip file from the [release page](https://github.com/kaalleen/inkscape-bingo-extension/releases/latest) and extract to your Inkscape extensions folder.
+
+---
 
 Works with Inkscape 1.2
 
