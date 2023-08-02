@@ -83,7 +83,7 @@ class BingoCardCreator(GenerateExtension):
 
         template_bingo_fields = self._get_template_fields()
 
-        if not any([field.tag_name == 'rect' for field in template_bingo_fields]):
+        if not any(field.tag_name == 'rect' for field in template_bingo_fields):
             numbers = self._get_numbers()
             number_group = self._render_numbers(numbers)
             grid_group = self._render_grid()
@@ -149,23 +149,37 @@ class BingoCardCreator(GenerateExtension):
         # load template "bingo area" params
         try:
             self.options.card_header = bingo_field.get('bingo-headline', self.options.card_header)
-            self.options.font_size = float(bingo_field.get('bingo-font-size',
-                                           self.options.font_size))
-            self.options.header_color = colors.Color(bingo_field.get('bingo-headline-color',
-                                                     self.options.header_color))
-            self.options.num_color = colors.Color(bingo_field.get('bingo-color',
-                                                  self.options.num_color))
-            self.options.num_range = int(bingo_field.get('bingo-column-range',
-                                         self.options.num_range))
+            self.options.font_size = float(bingo_field.get(
+                'bingo-font-size',
+                self.options.font_size
+            ))
+            self.options.header_color = colors.Color(bingo_field.get(
+                'bingo-headline-color',
+                self.options.header_color
+            ))
+            self.options.num_color = colors.Color(bingo_field.get(
+                'bingo-color',
+                self.options.num_color
+            ))
+            self.options.num_range = int(bingo_field.get(
+                'bingo-column-range',
+                self.options.num_range
+            ))
             self.options.columns = int(bingo_field.get('bingo-columns', self.options.columns))
             self.options.rows = int(bingo_field.get('bingo-rows', self.options.rows))
-            self.options.render_grid = Boolean(bingo_field.get('bingo-render-grid',
-                                               str(self.options.render_grid)))
-            self.options.stroke_width = int(bingo_field.get('bingo-stroke-width',
-                                            self.options.stroke_width))
+            self.options.render_grid = Boolean(bingo_field.get(
+                'bingo-render-grid',
+                str(self.options.render_grid)
+            ))
+            self.options.stroke_width = float(bingo_field.get(
+                'bingo-stroke-width',
+                self.options.stroke_width
+            ))
             self.options.free_spaces = bingo_field.get('bingo-free', None)
-            self.options.free_center = Boolean(bingo_field.get('bingo-star',
-                                               str(self.options.free_center)))
+            self.options.free_center = Boolean(bingo_field.get(
+                'bingo-star',
+                str(self.options.free_center)
+            ))
             self.options.free_rows = int(bingo_field.get('bingo-free-rows', self.options.free_rows))
             if self.options.card_header == "none":
                 self.options.card_header = ""
